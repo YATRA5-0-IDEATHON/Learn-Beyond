@@ -53,7 +53,7 @@ class TaskChainDetailSerializer(serializers.ModelSerializer):
 
     def get_progress(self, obj):
         total = obj.tasks.count()
-        current = self.context.get("current_task_order", 1)
+        current = self.context.get("current_task_order") or 1
         if not total:
             return 0
         return round(min(current - 1, total) / total, 2)

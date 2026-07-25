@@ -1,0 +1,179 @@
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import api from "../api.js";
+import { useAuth } from "../auth.jsx";
+
+export default function ChainDetail() {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [chain, setChain] = useState(null);
+  const [enrollment, setEnrollment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [notice, setNotice] = useState("");
+
+  async function load() {
+    const [chainRes, enrollRes] = await Promise.all([
+      api.get(`/chains/${id}/`),
+      api.get("/chains/my/").catch(() => ({ data: [] })),
+    ]);
+    setChain(chainRes.data);
+    const mine = (enrollRes.data || []).find((e) => e.chain?.id === id);
+    setEnrollment(mine || null);
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    load()
+      .catch(() => setError("Could not load this chain."))
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  async function handleEnroll() {
+    setNotice("");
+    try {
+      await api.post("/chains/enroll/", { chain_id: id });
+      await load();
+      setNotice("Enrolled! You can now start the first task.");
+    } catch {
+      setError("Could not enroll. Please try again.");
+    }
+  }
+
+  async function handleSubmit(task) {
+    setSubmitting(true);
+    setNotice("");
+    try {
+      await api.post("/submissions/", {
+        task_id: task.id,
+        submission_type: "text",
+        text_content: answer,
+      });
+      setAnswer("");
+      setNotice("Submitted! Your mentor will review it soon.");
+      await load();
+    } catch (err) {
+      setNotice(err.response?.data?.error || "Submission failed.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (loading) return <p className="max-w-4xl mx-auto px-6 py-12 text-ink-soft">Loading…</p>;
+  if (error) return <p className="max-w-4xl mx-auto px-6 py-12 text-danger">{error}</p>;
+  if (!chain) return null;
+
+  const isStudent = user?.role === "student";
+
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-12">
+      <Link to="/chains" className="text-sm text-primary hover:underline">
+        ← Back to chains
+      </Link>
+
+      <div className="mt-4 card p-6">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2.5 py-1 rounded-full capitalize">
+            {chain.skill}
+          </span>
+          <span className="text-[11px] text-ink-soft capitalize">{chain.level}</span>
+          {chain.mentor_verified && (
+            <span className="text-[11px] font-semibold bg-success/15 text-success px-2 py-0.5 rounded-full">
+              Verified Mentor
+            </span>
+          )}
+        </div>
+        <h1 className="mt-3 font-display text-2xl text-ink">{chain.title}</h1>
+        <p className="mt-2 text-ink-soft">{chain.description}</p>
+        <p className="mt-3 text-sm text-ink-soft">Mentor: {chain.mentor_name}</p>
+
+        {isStudent && !enrollment && (
+          <button onClick={handleEnroll} className="btn-primary mt-5">
+            Enroll in this chain
+          </button>
+        )}
+        {enrollment && (
+          <div className="mt-5">
+            <div className="h-2 rounded-full bg-line overflow-hidden">
+              <div
+                className="h-full bg-success rounded-full"
+                style={{ width: `${Math.round((chain.progress || 0) * 100)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-ink-soft">
+              {Math.round((chain.progress || 0) * 100)}% complete
+            </p>
+          </div>
+        )}
+      </div>
+
+      {notice && (
+        <div className="mt-4 bg-primary/5 text-primary text-sm rounded-md px-4 py-2">{notice}</div>
+      )}
+
+      <div className="mt-6 space-y-4">
+        {chain.tasks.map((task) => {
+          const locked = task.status === "locked";
+          const completed = task.status === "completed";
+          const current = task.status === "current";
+          return (
+            <div
+              key={task.id}
+              className={`card p-5 ${locked ? "opacity-60" : ""}`}
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-ink">
+                  {task.order_number}. {task.title}
+                </h3>
+                <span
+                  className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                    completed
+                      ? "bg-success/15 text-success"
+                      : current
+                      ? "bg-primary/10 text-primary"
+                      : "bg-line text-ink-soft"
+                  }`}
+                >
+                  {completed ? "Completed" : current ? "Current" : "Locked"}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-ink-soft">{task.description}</p>
+
+              {task.hints?.length > 0 && !locked && (
+                <ul className="mt-3 space-y-1">
+                  {task.hints.map((h, i) => (
+                    <li key={i} className="text-xs text-ink-soft flex gap-2">
+                      <span className="text-accent">💡</span>
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {isStudent && current && (
+                <div className="mt-4">
+                  <textarea
+                    className="field min-h-[120px] resize-y"
+                    placeholder="Write your answer / deliverable here…"
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value)}
+                  />
+                  <button
+                    onClick={() => handleSubmit(task)}
+                    disabled={submitting || !answer.trim()}
+                    className="btn-primary mt-3"
+                  >
+                    {submitting ? "Submitting…" : "Submit for review"}
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
