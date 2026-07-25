@@ -23,9 +23,12 @@ export default function StudentDashboard() {
           <h1 className="font-display text-3xl text-ink">Hi, {user?.name} 👋</h1>
           <p className="mt-1 text-ink-soft">Track your task chains and skill progress.</p>
         </div>
-        <div className="flex gap-3">
-          <Link to="/chains" className="btn-primary">
-            Browse chains
+        <div className="flex gap-3 flex-wrap">
+          <Link to="/onboarding" className="btn-primary">
+            🤖 Find my path (AI)
+          </Link>
+          <Link to="/mentors" className="btn-ghost">
+            Browse mentors
           </Link>
           <Link to={`/passport/${user?.id}`} className="btn-ghost">
             My Skill Passport

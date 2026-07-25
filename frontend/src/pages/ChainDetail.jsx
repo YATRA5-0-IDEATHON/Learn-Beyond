@@ -3,6 +3,12 @@ import { useParams, Link } from "react-router-dom";
 import api from "../api.js";
 import { useAuth } from "../auth.jsx";
 
+// Turn a YouTube watch URL into an embeddable URL.
+function embed(url) {
+  const m = url?.match(/[?&]v=([^&]+)/);
+  return m ? `https://www.youtube.com/embed/${m[1]}` : url;
+}
+
 export default function ChainDetail() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -142,6 +148,21 @@ export default function ChainDetail() {
               </div>
               <p className="mt-2 text-sm text-ink-soft">{task.description}</p>
 
+              {task.video_url && !locked && (
+                <div className="mt-3">
+                  <p className="text-xs font-semibold text-primary mb-1">🎬 Watch your mentor's lesson</p>
+                  <div className="aspect-video rounded-lg overflow-hidden border border-line">
+                    <iframe
+                      className="w-full h-full"
+                      src={embed(task.video_url)}
+                      title={task.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              )}
+
               {task.hints?.length > 0 && !locked && (
                 <ul className="mt-3 space-y-1">
                   {task.hints.map((h, i) => (
@@ -174,6 +195,27 @@ export default function ChainDetail() {
           );
         })}
       </div>
+
+      {enrollment && (chain.progress >= 1 || enrollment.status === "certified") && (
+        <div className="mt-6 card p-6 text-center border-2 border-success/40 bg-success/5">
+          <p className="text-2xl">🎉</p>
+          <h3 className="mt-2 font-display text-xl text-ink">All stages complete!</h3>
+          {enrollment.status === "certified" ? (
+            <>
+              <p className="mt-1 text-sm text-ink-soft">
+                Your mentor has verified your work. Your certificate is ready.
+              </p>
+              <Link to={`/certificate/${user?.id}`} className="btn-primary mt-4 inline-flex">
+                🎓 View my Certificate
+              </Link>
+            </>
+          ) : (
+            <p className="mt-1 text-sm text-ink-soft">
+              Waiting for your mentor to run the final video session and issue your certificate.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

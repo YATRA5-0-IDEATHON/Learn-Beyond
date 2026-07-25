@@ -9,8 +9,11 @@ class MentorProfile(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="mentor_profile"
     )
     linkedin_url = models.URLField(blank=True)
+    avatar_url = models.URLField(blank=True)
     job_title = models.CharField(max_length=150, blank=True)
     employer = models.CharField(max_length=150, blank=True)
+    reviews = models.JSONField(default=list)  # [{"author","rating","text"}]
+
     years_experience = models.PositiveIntegerField(default=0)
     skills = models.JSONField(default=list)  # ["accounting", "web_dev"]
     teaching_levels = models.JSONField(default=dict)  # {"accounting": ["beginner"]}

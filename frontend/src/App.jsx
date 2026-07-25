@@ -10,6 +10,9 @@ import ChainDetail from "./pages/ChainDetail.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import MentorDashboard from "./pages/MentorDashboard.jsx";
 import Passport from "./pages/Passport.jsx";
+import Onboarding from "./pages/Onboarding.jsx";
+import Mentors from "./pages/Mentors.jsx";
+import Certificate from "./pages/Certificate.jsx";
 
 function Protected({ children, role }) {
   const { user, loading } = useAuth();
@@ -40,6 +43,30 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/onboarding"
+            element={
+              <Protected>
+                <Onboarding />
+              </Protected>
+            }
+          />
+          <Route
+            path="/mentors"
+            element={
+              <Protected>
+                <Mentors />
+              </Protected>
+            }
+          />
+          <Route
+            path="/certificate/:studentId"
+            element={
+              <Protected>
+                <Certificate />
+              </Protected>
+            }
+          />
           <Route
             path="/chains"
             element={

@@ -15,7 +15,7 @@ class MentorProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MentorProfile
         fields = [
-            "id", "name", "linkedin_url", "job_title", "employer",
+            "id", "name", "linkedin_url", "avatar_url", "job_title", "employer",
             "years_experience", "skills", "teaching_levels", "session_rate",
-            "bio", "is_verified", "rating", "total_sessions", "availability",
+            "bio", "is_verified", "rating", "total_sessions", "reviews", "availability",
         ]

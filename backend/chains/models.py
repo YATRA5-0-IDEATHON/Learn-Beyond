@@ -41,6 +41,8 @@ class Task(models.Model):
     order_number = models.PositiveIntegerField(default=1)
     difficulty = models.CharField(max_length=20, default="medium")
     hints = models.JSONField(default=list)
+    video_url = models.URLField(blank=True)  # mentor's lesson video for this stage
+
     expected_output_type = models.CharField(
         max_length=20, choices=OUTPUT_CHOICES, default="text"
     )

@@ -73,31 +73,25 @@ export default function Landing() {
 
           <div className="card p-6">
             <p className="text-[11px] font-semibold tracking-widest text-accent uppercase">
-              Skill Passport Preview
+              Your Journey in 4 Steps
             </p>
-            <div className="mt-4 flex items-center gap-3">
-              <span className="w-12 h-12 rounded-full bg-accent text-white flex items-center justify-center font-bold">
-                SR
-              </span>
-              <div>
-                <p className="font-semibold text-ink">Sita Rai</p>
-                <p className="text-sm text-ink-soft">Junior Accountant · Dhangadhi</p>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              {["Accounting · Beginner", "Accounting · Intermediate", "Business · Beginner"].map(
-                (s) => (
-                  <div
-                    key={s}
-                    className="flex items-center justify-between bg-surface-muted rounded-md px-3 py-2"
-                  >
-                    <span className="text-sm text-ink">{s}</span>
-                    <span className="text-[11px] font-semibold bg-success/15 text-success px-2 py-0.5 rounded-full">
-                      Verified
-                    </span>
+            <div className="mt-4 space-y-3">
+              {[
+                { n: "1", t: "Tell our AI what you study & love", d: "Get a personalized skill path" },
+                { n: "2", t: "Pick a verified expert mentor", d: "Rated & LinkedIn-verified" },
+                { n: "3", t: "Complete real project stages", d: "Video lessons + mentor reviews" },
+                { n: "4", t: "Earn a verified certificate", d: "Share it on your CV & profile" },
+              ].map((s) => (
+                <div key={s.n} className="flex items-start gap-3 bg-surface-muted rounded-md px-3 py-2.5">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center">
+                    {s.n}
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-ink">{s.t}</p>
+                    <p className="text-xs text-ink-soft">{s.d}</p>
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
           </div>
         </div>

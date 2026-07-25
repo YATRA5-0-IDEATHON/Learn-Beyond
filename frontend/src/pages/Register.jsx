@@ -42,8 +42,9 @@ export default function Register() {
       } else if (form.linkedin_url.trim()) {
         payload.linkedin_url = form.linkedin_url.trim();
       }
-      await register(payload);
-      navigate("/dashboard");
+      const created = await register(payload);
+      navigate(created.role === "student" ? "/onboarding" : "/dashboard");
+
     } catch (err) {
       const data = err.response?.data;
       let msg = "Registration failed. Please check your details.";

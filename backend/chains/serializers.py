@@ -9,7 +9,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id", "title", "description", "order_number", "difficulty",
-            "hints", "expected_output_type", "status",
+            "hints", "video_url", "expected_output_type", "status",
         ]
 
     def get_status(self, obj):
