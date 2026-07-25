@@ -4,14 +4,17 @@ from .models import Session
 
 class SessionSerializer(serializers.ModelSerializer):
     mentor_name = serializers.CharField(source="mentor.user.name", read_only=True)
+    mentor_avatar = serializers.CharField(source="mentor.avatar_url", read_only=True)
     student_name = serializers.CharField(source="student.name", read_only=True)
     chain_title = serializers.CharField(source="chain.title", read_only=True)
+    task_title = serializers.CharField(source="task.title", read_only=True)
 
     class Meta:
         model = Session
         fields = [
-            "id", "mentor", "mentor_name", "student", "student_name",
-            "chain", "chain_title", "scheduled_at", "duration_minutes",
+            "id", "mentor", "mentor_name", "mentor_avatar", "student", "student_name",
+            "chain", "chain_title", "task", "task_title",
+            "scheduled_at", "duration_minutes",
             "video_link", "fee_amount", "platform_commission", "mentor_earnings",
             "payment_status", "payment_method", "session_status",
             "originality_verified", "mentor_notes", "outcome",

@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import api from "../api.js";
 import { useAuth } from "../auth.jsx";
 
+function formatWhen(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString([], {
+    weekday: "short", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit",
+  });
+}
+
 export default function MentorDashboard() {
   const { user } = useAuth();
   const [pending, setPending] = useState([]);
@@ -12,12 +20,36 @@ export default function MentorDashboard() {
   const [notice, setNotice] = useState("");
   const [ready, setReady] = useState([]);
   const [certifiedId, setCertifiedId] = useState(null);
+  const [msessions, setMsessions] = useState([]);
+  const [when, setWhen] = useState({});
 
   function load() {
     return Promise.all([
       api.get("/submissions/pending/").then((res) => setPending(res.data)).catch(() => {}),
       api.get("/certifications/ready/").then((res) => setReady(res.data)).catch(() => {}),
+      api.get("/sessions/mentor/").then((res) => setMsessions(res.data)).catch(() => {}),
     ]);
+  }
+
+  async function schedule(sess) {
+    const dt = when[sess.id];
+    if (!dt) {
+      setNotice("Pick a date and time first.");
+      return;
+    }
+    setBusyId(sess.id);
+    setNotice("");
+    try {
+      await api.patch(`/sessions/${sess.id}/schedule/`, {
+        scheduled_at: new Date(dt).toISOString(),
+      });
+      setNotice(`Session scheduled with ${sess.student_name}.`);
+      await load();
+    } catch {
+      setNotice("Could not schedule the session.");
+    } finally {
+      setBusyId(null);
+    }
   }
 
   useEffect(() => {
@@ -112,6 +144,79 @@ export default function MentorDashboard() {
           </div>
         </div>
       )}
+
+      {/* Per-task video session requests */}
+      {(() => {
+        const active = msessions.filter(
+          (s) => s.task && ["requested", "scheduled"].includes(s.session_status)
+        );
+        if (active.length === 0) return null;
+        return (
+          <div className="mt-8">
+            <h2 className="font-semibold text-ink">📅 Video Session Requests ({active.length})</h2>
+            <p className="text-sm text-ink-soft mt-1">
+              Students want to discuss a task with you. Pick a time, then meet them on the call.
+            </p>
+            <div className="mt-4 space-y-4">
+              {active.map((s) => (
+                <div key={s.id} className="card p-6 border-2 border-accent/20">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <h3 className="font-semibold text-ink">{s.student_name}</h3>
+                      <p className="text-xs text-ink-soft">
+                        {s.task_title} · {s.chain_title}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                        s.session_status === "scheduled"
+                          ? "bg-accent/15 text-accent"
+                          : "bg-warning/15 text-warning"
+                      }`}
+                    >
+                      {s.session_status === "scheduled" ? "Scheduled" : "Awaiting time"}
+                    </span>
+                  </div>
+
+                  {s.session_status === "scheduled" ? (
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <p className="text-sm text-ink">
+                        📅 <span className="font-semibold">{formatWhen(s.scheduled_at)}</span>
+                      </p>
+                      <a href={`/session/${s.id}`} className="btn-primary text-sm">
+                        🎥 Join call
+                      </a>
+                      <button
+                        onClick={() => setMsessions((m) => m.map((x) =>
+                          x.id === s.id ? { ...x, session_status: "requested" } : x))}
+                        className="btn-ghost text-sm"
+                      >
+                        Reschedule
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-4 flex flex-wrap items-center gap-3">
+                      <input
+                        type="datetime-local"
+                        className="field max-w-xs"
+                        value={when[s.id] || ""}
+                        onChange={(e) => setWhen((w) => ({ ...w, [s.id]: e.target.value }))}
+                      />
+                      <button
+                        onClick={() => schedule(s)}
+                        disabled={busyId === s.id}
+                        className="btn-primary text-sm"
+                      >
+                        {busyId === s.id ? "Scheduling…" : "Confirm time"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       <h2 className="mt-8 font-semibold text-ink">
         Pending reviews {pending.length > 0 && `(${pending.length})`}

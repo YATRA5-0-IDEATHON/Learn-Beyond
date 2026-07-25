@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.conf import settings
 from mentors.models import MentorProfile
-from chains.models import TaskChain
+from chains.models import TaskChain, Task
 
 
 class Session(models.Model):
@@ -12,6 +12,7 @@ class Session(models.Model):
         ("refunded", "Refunded"),
     ]
     SESSION_STATUS = [
+        ("requested", "Requested"),
         ("scheduled", "Scheduled"),
         ("completed", "Completed"),
         ("cancelled", "Cancelled"),
@@ -26,7 +27,11 @@ class Session(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sessions"
     )
     chain = models.ForeignKey(TaskChain, on_delete=models.CASCADE, related_name="sessions")
-    scheduled_at = models.DateTimeField()
+    # Optional: a per-task review call. Null for the final certification session.
+    task = models.ForeignKey(
+        Task, on_delete=models.CASCADE, related_name="sessions", null=True, blank=True
+    )
+    scheduled_at = models.DateTimeField(null=True, blank=True)
     duration_minutes = models.PositiveIntegerField(default=30)
     video_link = models.URLField(blank=True)
     fee_amount = models.PositiveIntegerField(default=300)

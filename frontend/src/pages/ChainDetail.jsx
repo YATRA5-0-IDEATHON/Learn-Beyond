@@ -9,6 +9,14 @@ function embed(url) {
   return m ? `https://www.youtube.com/embed/${m[1]}` : url;
 }
 
+function formatWhen(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString([], {
+    weekday: "short", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit",
+  });
+}
+
 export default function ChainDetail() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -19,15 +27,38 @@ export default function ChainDetail() {
   const [answer, setAnswer] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState("");
+  const [sessions, setSessions] = useState([]);
+  const [busyTask, setBusyTask] = useState(null);
 
   async function load() {
-    const [chainRes, enrollRes] = await Promise.all([
+    const [chainRes, enrollRes, sessRes] = await Promise.all([
       api.get(`/chains/${id}/`),
       api.get("/chains/my/").catch(() => ({ data: [] })),
+      api.get("/sessions/my/").catch(() => ({ data: [] })),
     ]);
     setChain(chainRes.data);
     const mine = (enrollRes.data || []).find((e) => e.chain?.id === id);
     setEnrollment(mine || null);
+    setSessions(sessRes.data || []);
+  }
+
+  // Latest per-task session for this student (task-linked, not certification).
+  function sessionForTask(taskId) {
+    return sessions.find((s) => s.task === taskId);
+  }
+
+  async function requestSession(task) {
+    setBusyTask(task.id);
+    setNotice("");
+    try {
+      await api.post("/sessions/request/", { task_id: task.id });
+      setNotice("Video review requested! Your mentor will pick a time.");
+      await load();
+    } catch {
+      setNotice("Could not request a session. Please try again.");
+    } finally {
+      setBusyTask(null);
+    }
   }
 
   useEffect(() => {
@@ -191,6 +222,51 @@ export default function ChainDetail() {
                   </button>
                 </div>
               )}
+
+              {/* Per-task video review call */}
+              {isStudent && !locked && (() => {
+                const sess = sessionForTask(task.id);
+                if (!sess) {
+                  return (
+                    <button
+                      onClick={() => requestSession(task)}
+                      disabled={busyTask === task.id}
+                      className="btn-ghost mt-3 text-sm"
+                    >
+                      {busyTask === task.id ? "Requesting…" : "🎥 Request a video review with your mentor"}
+                    </button>
+                  );
+                }
+                if (sess.session_status === "requested") {
+                  return (
+                    <div className="mt-3 rounded-lg bg-warning/10 px-4 py-3 text-sm text-ink">
+                      ⏳ Video review requested — waiting for your mentor to pick a time.
+                    </div>
+                  );
+                }
+                if (sess.session_status === "scheduled") {
+                  return (
+                    <div className="mt-3 rounded-lg border border-accent/30 bg-accent/5 px-4 py-3">
+                      <p className="text-sm text-ink">
+                        📅 Video session scheduled for{" "}
+                        <span className="font-semibold">{formatWhen(sess.scheduled_at)}</span> with{" "}
+                        {chain.mentor_name}.
+                      </p>
+                      <Link to={`/session/${sess.id}`} className="btn-primary mt-2 inline-flex text-sm">
+                        🎥 Join call
+                      </Link>
+                    </div>
+                  );
+                }
+                if (sess.session_status === "completed") {
+                  return (
+                    <div className="mt-3 rounded-lg bg-success/10 px-4 py-3 text-sm text-success font-medium">
+                      ✅ Video review completed with {chain.mentor_name}.
+                    </div>
+                  );
+                }
+                return null;
+              })()}
             </div>
           );
         })}

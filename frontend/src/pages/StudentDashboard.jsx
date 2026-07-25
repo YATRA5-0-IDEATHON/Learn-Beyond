@@ -3,18 +3,29 @@ import { Link } from "react-router-dom";
 import api from "../api.js";
 import { useAuth } from "../auth.jsx";
 
+function formatWhen(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString([], {
+    weekday: "short", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit",
+  });
+}
+
 export default function StudentDashboard() {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api
-      .get("/chains/my/")
-      .then((res) => setEnrollments(res.data))
-      .catch(() => setEnrollments([]))
-      .finally(() => setLoading(false));
+    Promise.all([
+      api.get("/chains/my/").then((res) => setEnrollments(res.data)).catch(() => setEnrollments([])),
+      api.get("/sessions/my/").then((res) => setSessions(res.data)).catch(() => setSessions([])),
+    ]).finally(() => setLoading(false));
   }, []);
+
+  const upcoming = sessions.filter((s) => s.session_status === "scheduled");
+
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
@@ -35,6 +46,29 @@ export default function StudentDashboard() {
           </Link>
         </div>
       </div>
+
+      {upcoming.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-semibold text-ink">📅 Upcoming Video Sessions</h2>
+          <div className="mt-3 space-y-3">
+            {upcoming.map((s) => (
+              <div key={s.id} className="card p-4 flex items-center justify-between flex-wrap gap-3 border border-accent/30 bg-accent/5">
+                <div>
+                  <p className="text-sm font-semibold text-ink">
+                    {s.task_title || "Final certification review"}
+                  </p>
+                  <p className="text-xs text-ink-soft">
+                    with {s.mentor_name} · {formatWhen(s.scheduled_at)}
+                  </p>
+                </div>
+                <Link to={`/session/${s.id}`} className="btn-primary text-sm">
+                  🎥 Join call
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <h2 className="mt-10 font-semibold text-ink">My Enrollments</h2>
       {loading && <p className="mt-4 text-ink-soft">Loading…</p>}

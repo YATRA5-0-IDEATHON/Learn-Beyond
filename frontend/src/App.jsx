@@ -13,6 +13,7 @@ import Passport from "./pages/Passport.jsx";
 import Onboarding from "./pages/Onboarding.jsx";
 import Mentors from "./pages/Mentors.jsx";
 import Certificate from "./pages/Certificate.jsx";
+import SessionRoom from "./pages/SessionRoom.jsx";
 
 function Protected({ children, role }) {
   const { user, loading } = useAuth();
@@ -88,6 +89,14 @@ export default function App() {
             element={
               <Protected>
                 <DashboardRouter />
+              </Protected>
+            }
+          />
+          <Route
+            path="/session/:id"
+            element={
+              <Protected>
+                <SessionRoom />
               </Protected>
             }
           />
