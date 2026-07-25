@@ -15,6 +15,7 @@ export default function StudentDashboard() {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [slug, setSlug] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +23,11 @@ export default function StudentDashboard() {
       api.get("/chains/my/").then((res) => setEnrollments(res.data)).catch(() => setEnrollments([])),
       api.get("/sessions/my/").then((res) => setSessions(res.data)).catch(() => setSessions([])),
     ]).finally(() => setLoading(false));
-  }, []);
+    if (user?.id) {
+      api.get(`/passport/${user.id}/`).then((res) => setSlug(res.data.slug)).catch(() => {});
+    }
+  }, [user?.id]);
+
 
   const upcoming = sessions.filter((s) => s.session_status === "scheduled");
 
@@ -44,7 +49,13 @@ export default function StudentDashboard() {
           <Link to={`/passport/${user?.id}`} className="btn-ghost">
             My Skill Passport
           </Link>
+          {slug && (
+            <Link to={`/p/${slug}`} className="btn-ghost">
+              🔗 My Public Portfolio
+            </Link>
+          )}
         </div>
+
       </div>
 
       {upcoming.length > 0 && (

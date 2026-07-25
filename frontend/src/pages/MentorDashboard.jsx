@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../api.js";
 import { useAuth } from "../auth.jsx";
+import PortfolioReport from "../components/PortfolioReport.jsx";
+
 
 function formatWhen(iso) {
   if (!iso) return "";
@@ -218,9 +220,13 @@ export default function MentorDashboard() {
         );
       })()}
 
+      {/* Portfolio report editor — mentor-submitted skills, recommendation, notes */}
+      <PortfolioReport />
+
       <h2 className="mt-8 font-semibold text-ink">
         Pending reviews {pending.length > 0 && `(${pending.length})`}
       </h2>
+
 
       {loading && <p className="mt-4 text-ink-soft">Loading…</p>}
       {!loading && pending.length === 0 && (

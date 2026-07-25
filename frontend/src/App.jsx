@@ -10,6 +10,8 @@ import ChainDetail from "./pages/ChainDetail.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import MentorDashboard from "./pages/MentorDashboard.jsx";
 import Passport from "./pages/Passport.jsx";
+import Portfolio from "./pages/Portfolio.jsx";
+
 import Onboarding from "./pages/Onboarding.jsx";
 import Mentors from "./pages/Mentors.jsx";
 import Certificate from "./pages/Certificate.jsx";
@@ -101,7 +103,9 @@ export default function App() {
             }
           />
           <Route path="/passport/:userId" element={<Passport />} />
+          <Route path="/p/:slug" element={<Portfolio />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+
         </Routes>
       </div>
     </div>

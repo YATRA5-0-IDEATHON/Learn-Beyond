@@ -1,6 +1,8 @@
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils.text import slugify
+
 
 
 class UserManager(BaseUserManager):
@@ -57,7 +59,17 @@ class StudentProfile(models.Model):
     github_url = models.URLField(blank=True)
     portfolio_url = models.URLField(blank=True)
     headline = models.CharField(max_length=255, blank=True)
+    public_slug = models.SlugField(max_length=120, unique=True, blank=True)
+    mentor_recommendation = models.CharField(max_length=10, blank=True)  # low|medium|high
     onboarding_complete = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.public_slug:
+            base = slugify(self.user.name) or "learner"
+            self.public_slug = f"{base}-{uuid.uuid4().hex[:3]}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"StudentProfile: {self.user.name}"
+
+
