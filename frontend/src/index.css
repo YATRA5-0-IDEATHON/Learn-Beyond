@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-page text-ink font-body antialiased;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
