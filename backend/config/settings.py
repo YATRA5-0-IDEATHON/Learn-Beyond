@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "sessions_app",
     "certifications",
     "passport",
+    "collaborations",
 ]
 
 MIDDLEWARE = [

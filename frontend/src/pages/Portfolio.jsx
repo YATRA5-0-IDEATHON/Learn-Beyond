@@ -122,6 +122,17 @@ export default function Portfolio() {
               <StatBox label="Proficiency" value={`${data.overall_proficiency}%`} />
             </div>
 
+            {data.project_earnings > 0 && (
+              <div className="mt-3 bg-success/10 rounded-lg px-4 py-3 text-center">
+                <p className="text-2xl font-bold text-success">
+                  NPR {Number(data.project_earnings).toLocaleString()}
+                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft">
+                  Earned from real projects
+                </p>
+              </div>
+            )}
+
             {(data.linkedin_url || data.github_url) && (
               <div className="mt-5 text-left">
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-soft mb-1">

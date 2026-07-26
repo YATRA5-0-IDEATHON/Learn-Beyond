@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/sessions/", include("sessions_app.urls")),
     path("api/certifications/", include("certifications.urls")),
     path("api/passport/", include("passport.urls")),
+    path("api/collaborations/", include("collaborations.urls")),
 ]
 
 # Serve uploaded media files during development.

@@ -107,9 +107,14 @@ export default function MentorDashboard() {
             Welcome, {user?.name}. Review student submissions below.
           </p>
         </div>
-        <a href="/chains/new" className="btn-primary">
-          🤖 Create Chain with AI
-        </a>
+        <div className="flex gap-3 flex-wrap">
+          <a href="/projects" className="btn-ghost">
+            💼 Paid Projects
+          </a>
+          <a href="/chains/new" className="btn-primary">
+            🤖 Create Chain with AI
+          </a>
+        </div>
       </div>
 
 

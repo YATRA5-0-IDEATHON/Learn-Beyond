@@ -46,6 +46,9 @@ export default function StudentDashboard() {
           <Link to="/mentors" className="btn-ghost">
             Browse mentors
           </Link>
+          <Link to="/projects" className="btn-ghost">
+            💼 Paid Projects
+          </Link>
           <Link to={`/passport/${user?.id}`} className="btn-ghost">
             My Skill Passport
           </Link>

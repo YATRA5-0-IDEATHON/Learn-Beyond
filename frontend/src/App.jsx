@@ -18,6 +18,7 @@ import Onboarding from "./pages/Onboarding.jsx";
 import Mentors from "./pages/Mentors.jsx";
 import Certificate from "./pages/Certificate.jsx";
 import SessionRoom from "./pages/SessionRoom.jsx";
+import Projects from "./pages/Projects.jsx";
 
 function Protected({ children, role }) {
   const { user, loading } = useAuth();
@@ -102,6 +103,14 @@ export default function App() {
             element={
               <Protected>
                 <DashboardRouter />
+              </Protected>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <Protected>
+                <Projects />
               </Protected>
             }
           />

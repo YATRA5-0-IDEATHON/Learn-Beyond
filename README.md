@@ -1,54 +1,56 @@
-# Learn-Beyond 📚
+# Learn-Beyond
 
-> A **YATRA 5.0 Ideathon** project by Team Procastinators, focused on **Quality Education** (UN Sustainable Development Goal 4).
+Learn-Beyond is a project built for the YATRA 5.0 Ideathon by Team Procastinators. It focuses on Quality Education (UN Sustainable Development Goal 4).
 
-**LearnBeyond** connects students with verified industry mentors through real **task chains** — not lectures. Students build a portfolio of proven work and earn a **Skill Passport** that employers can trust.
+The idea is simple: instead of learning from lectures, students learn by doing real work. They enroll in task chains designed by industry mentors, submit their work, and get it reviewed by those mentors. As they complete tasks, they build a verifiable Skill Passport that employers can actually trust.
 
----
+## What it does
 
-## 🌟 Overview
+Most learners never get the hands-on, mentor-reviewed experience that employers look for. Learn-Beyond tries to close that gap. A student picks a skill, works through a chain of practical tasks, and a real mentor reviews each submission. Once a chain is finished, the mentor runs a short video session to verify the work is genuine and issues a certificate.
 
-Millions of learners lack access to quality educational resources, personalized learning paths, and real-world experience that employers value. LearnBeyond addresses this by letting students **learn by doing real work**: they enroll in mentor-designed task chains, submit their work, get it reviewed by real mentors, and accumulate verified skills in a shareable Skill Passport.
+The part we're most excited about is what happens after certification. A mentor can then hire the students they certified for real, paid projects. The student does the work, the mentor reviews it, and the payment is split automatically (the platform keeps 20 percent, the same cut used for paid sessions). Those earnings show up on the student's public portfolio as proof of real, paid experience.
 
-## 💡 Key Features
+## Main features
 
-- 📖 **Task Chains** — structured, real-world project tracks designed by mentors
-- 🤝 **Verified Mentors** — industry professionals review student submissions
-- 🎓 **Skill Passport** — a verifiable record of proven skills and levels
-- 📊 **Progress Tracking** — enroll, submit tasks, and track advancement
-- 🏅 **Certifications** — recognition for completed chains
+- Task chains: structured, real-world project tracks created by mentors
+- Verified mentors: industry professionals who review submissions
+- Skill Passport: a shareable, verifiable record of proven skills
+- Certifications: issued after a final video review of the completed chain
+- Paid projects: mentors hire certified students for real work, with an automatic 80/20 payout split
+- Public portfolio: shows verified tasks, mentor grades, certifications, and real project earnings
 
-## 🛠️ Tech Stack
+## Tech stack
 
-- **Frontend:** React 18 + Vite, Tailwind CSS, React Router, Axios
-- **Backend:** Django 5 + Django REST Framework, SimpleJWT (auth), django-cors-headers
-- **Database:** SQLite (development)
+- Frontend: React 18 with Vite, Tailwind CSS, React Router, Axios
+- Backend: Django 5 with Django REST Framework, SimpleJWT for auth, and django-cors-headers
+- Database: SQLite for development
 
-## 📁 Project Structure
+## Project structure
 
 ```
 learn-Beyond/
-├── backend/            # Django REST API (port 8000)
-│   ├── accounts/       # Users & authentication
-│   ├── mentors/        # Mentor profiles
-│   ├── chains/         # Task chains
-│   ├── submissions/    # Student task submissions
-│   ├── passport/       # Skill Passport
-│   ├── certifications/ # Certifications
-│   ├── sessions_app/   # Sessions
-│   └── config/         # Django settings & URLs
-├── frontend/           # React + Vite app (port 5173)
-├── docs/               # Project documentation
-└── start-dev.bat       # One-command launcher (Windows)
+├── backend/              Django REST API (port 8000)
+│   ├── accounts/         Users and authentication
+│   ├── mentors/          Mentor profiles
+│   ├── chains/           Task chains
+│   ├── submissions/      Student task submissions
+│   ├── certifications/   Certifications
+│   ├── collaborations/   Paid projects between mentors and certified students
+│   ├── passport/         Skill Passport and public portfolio
+│   ├── sessions_app/     Video sessions
+│   └── config/           Django settings and URLs
+├── frontend/             React + Vite app (port 5173)
+├── docs/                 Project documentation
+└── start-dev.bat         One-command launcher for Windows
 ```
 
-## 🏁 Running Locally
+## Running it locally
 
-The app has two parts: a Django REST backend (port 8000) and a React + Vite frontend (port 5173). Run each in its own terminal.
+The app has two parts: a Django backend on port 8000 and a React frontend on port 5173. Run each in its own terminal.
 
-> **Windows note:** use `npm.cmd` instead of `npm` if PowerShell blocks the `npm.ps1` script.
+On Windows, if PowerShell blocks the `npm.ps1` script, use `npm.cmd` instead of `npm`.
 
-### 1. Backend — Django API (http://localhost:8000)
+### Backend (http://localhost:8000)
 
 ```bash
 cd backend
@@ -57,15 +59,18 @@ cd backend
 python -m venv venv
 venv\Scripts\python.exe -m pip install -r requirements.txt
 
-# Apply migrations and load demo data (mentor, student, 3 task chains)
+# Apply migrations and load demo data
 venv\Scripts\python.exe manage.py migrate
 venv\Scripts\python.exe manage.py seed
+
+# Optional: create a completed paid project so you can see the earnings flow
+venv\Scripts\python.exe manage.py demo_project
 
 # Start the API
 venv\Scripts\python.exe manage.py runserver
 ```
 
-### 2. Frontend — React app (http://localhost:5173)
+### Frontend (http://localhost:5173)
 
 ```bash
 cd frontend
@@ -73,38 +78,33 @@ cd frontend
 # First time only
 npm.cmd install
 
-# Start the dev server (proxies /api to the backend on :8000)
+# Start the dev server (it proxies /api to the backend on port 8000)
 npm.cmd run dev
 ```
 
 Then open http://localhost:5173.
 
-### One-command launch (Windows)
+On Windows you can also run `start-dev.bat` from the project root to launch both servers at once.
 
-From the project root, run `start-dev.bat` to open both servers in separate windows.
+## Demo logins
 
-### Demo logins (password: `demo1234`)
+All demo accounts use the password `demo1234`.
 
-- **Student:** `sita@learnbeyond.np` — browse chains, enroll, submit tasks, view Skill Passport
-- **Mentor:** `ramesh@learnbeyond.np` — review student submissions from the dashboard
+- Student: `sita@learnbeyond.np` — browse chains, enroll, submit tasks, view the Skill Passport
+- Mentor: `ramesh@learnbeyond.np` — review submissions from the dashboard
+- Certified student: `pooja@learnbeyond.np` — after running `demo_project`, this account has a completed paid project and real earnings on the portfolio
+- Mentor for paid projects: `rajan@learnbeyond.np` — see the project posted and the student's approved work
 
-## 📚 Documentation
+To try the paid projects feature, log in and open the Paid Projects link from the dashboard, or go to http://localhost:5173/projects. The page shows the mentor view or the student view depending on who is logged in. Note that a mentor can only invite students who hold an active certification in that project's skill.
 
-Detailed design docs live in the [`docs/`](docs/) folder:
+## Documentation
 
-- Project overview, problem statement & vision
-- User roles & features
-- System architecture & database design
-- API specification
+More detailed design docs are in the [`docs/`](docs/) folder, covering the project overview, problem statement, user roles, features, system architecture, database design, and API specification.
 
-## 👥 Team Procastinators
+## Team
 
-Built for the **YATRA 5.0 Ideathon** — Quality Education.
+Built by Team Procastinators for the YATRA 5.0 Ideathon.
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License.
-
----
-
-_Made with ❤️ by Team Procastinators for YATRA 5.0 Ideathon — Quality Education_
+MIT License.

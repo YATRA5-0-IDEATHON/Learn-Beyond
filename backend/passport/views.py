@@ -7,6 +7,7 @@ from certifications.models import Certification
 from certifications.serializers import CertificationSerializer
 from submissions.models import Submission
 from chains.models import Enrollment
+from collaborations.models import Collaborator
 from .models import SkillReport, StudyComment
 from .serializers import SkillReportSerializer, StudyCommentSerializer
 
@@ -34,6 +35,21 @@ def _portfolio_payload(user):
     cert_data = CertificationSerializer(certs, many=True).data
     latest_cert = cert_data[0] if cert_data else None
 
+    # Real paid-project collaborations this student has completed.
+    paid_collabs = Collaborator.objects.filter(
+        student=user, status="accepted", paid=True
+    ).select_related("project")
+    project_earnings = sum(c.net_earnings for c in paid_collabs)
+    completed_projects = [
+        {
+            "title": c.project.title,
+            "skill": c.project.skill,
+            "role": c.role,
+            "earnings": c.net_earnings,
+        }
+        for c in paid_collabs
+    ]
+
     return {
         "name": user.name,
         "slug": profile.public_slug if profile else "",
@@ -50,6 +66,8 @@ def _portfolio_payload(user):
         ),
         "verified_tasks": verified_tasks,
         "overall_proficiency": overall,
+        "project_earnings": project_earnings,
+        "completed_projects": completed_projects,
         "latest_certification": latest_cert,
         "certifications": cert_data,
         "skill_reports": SkillReportSerializer(reports, many=True).data,
