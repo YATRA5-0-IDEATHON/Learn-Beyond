@@ -30,6 +30,7 @@ class Task(models.Model):
     OUTPUT_CHOICES = [
         ("text", "Text"),
         ("file", "File"),
+        ("image", "Image / Photo"),
         ("github_url", "GitHub URL"),
         ("live_url", "Live URL"),
         ("code", "Code"),
@@ -41,7 +42,9 @@ class Task(models.Model):
     order_number = models.PositiveIntegerField(default=1)
     difficulty = models.CharField(max_length=20, default="medium")
     hints = models.JSONField(default=list)
+    learning_topics = models.JSONField(default=list)  # concepts the student must cover
     video_url = models.URLField(blank=True)  # mentor's lesson video for this stage
+
 
     expected_output_type = models.CharField(
         max_length=20, choices=OUTPUT_CHOICES, default="text"

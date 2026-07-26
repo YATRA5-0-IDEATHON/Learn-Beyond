@@ -21,8 +21,12 @@ def submit_view(request):
     if prev >= 3:
         return Response({"error": "Max 3 attempts reached"}, status=400)
 
-    data = {**request.data, "task": task_id}
+    # request.data is a QueryDict for multipart uploads; copy it so we keep any
+    # attached files while adding the resolved task id.
+    data = request.data.copy()
+    data["task"] = task_id
     serializer = SubmissionSerializer(data=data)
+
     serializer.is_valid(raise_exception=True)
     submission = serializer.save(
         student=request.user,
@@ -48,8 +52,17 @@ def submission_detail_view(request, pk):
 def mentor_pending_view(request):
     if not hasattr(request.user, "mentor_profile"):
         return Response({"error": "Mentor only"}, status=403)
-    subs = Submission.objects.filter(status="pending").select_related("task", "student")
+    # Only surface submissions for chains this mentor actually owns, so mentors
+    # never see (or review) another mentor's students.
+    subs = (
+        Submission.objects.filter(
+            status="pending",
+            task__chain__mentor=request.user.mentor_profile,
+        )
+        .select_related("task", "student")
+    )
     return Response(SubmissionSerializer(subs, many=True).data)
+
 
 
 @api_view(["PATCH"])

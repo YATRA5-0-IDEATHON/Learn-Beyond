@@ -10,11 +10,14 @@ class SubmissionSerializer(serializers.ModelSerializer):
         model = Submission
         fields = [
             "id", "task", "task_title", "student_name", "attempt_number",
-            "submission_type", "text_content", "file_url", "github_url",
-            "live_url", "code_content", "hints_used", "status",
-            "mentor_feedback", "feedback_tags", "submitted_at", "reviewed_at",
+            "submission_type", "text_content", "file_url", "file_upload",
+            "image_upload", "github_url", "live_url", "code_content",
+            "hints_used", "status", "mentor_feedback", "feedback_tags",
+            "submitted_at", "reviewed_at",
         ]
         read_only_fields = [
             "status", "mentor_feedback", "feedback_tags", "reviewed_at",
             "attempt_number",
         ]
+
+

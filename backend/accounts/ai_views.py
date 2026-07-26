@@ -16,6 +16,7 @@ GEMINI_URL = (
 
 # Canonical skills we can recommend + friendly labels.
 SKILL_LABELS = {
+    "blockchain": "Blockchain / Web3 Development",
     "full_stack": "Full-Stack Web Development",
     "web_dev": "Web Development",
     "accounting": "Accounting",
@@ -26,10 +27,14 @@ SKILL_LABELS = {
     "finance": "Finance",
 }
 
+
 # Keyword hints for the offline fallback matcher.
 KEYWORDS = {
+    "blockchain": ["blockchain", "block chain", "web3", "web 3", "crypto", "cryptocurrency",
+                   "smart contract", "solidity", "ethereum", "defi", "nft", "dapp", "bitcoin"],
     "full_stack": ["full stack", "full-stack", "fullstack", "react", "web dev", "web development",
                    "frontend", "backend", "javascript", "computer", "software", "mern"],
+
     "civil": ["civil", "structure", "construction", "surveying"],
     "agriculture": ["agri", "agriculture", "farming", "crop", "soil"],
     "electrical": ["electrical", "electronics", "circuit", "power"],

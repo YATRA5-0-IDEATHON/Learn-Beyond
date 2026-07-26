@@ -9,6 +9,8 @@ import BrowseChains from "./pages/BrowseChains.jsx";
 import ChainDetail from "./pages/ChainDetail.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import MentorDashboard from "./pages/MentorDashboard.jsx";
+import ChainBuilder from "./pages/ChainBuilder.jsx";
+
 import Passport from "./pages/Passport.jsx";
 import Portfolio from "./pages/Portfolio.jsx";
 
@@ -78,6 +80,15 @@ export default function App() {
               </Protected>
             }
           />
+          <Route
+            path="/chains/new"
+            element={
+              <Protected role="mentor">
+                <ChainBuilder />
+              </Protected>
+            }
+          />
+
           <Route
             path="/chains/:id"
             element={

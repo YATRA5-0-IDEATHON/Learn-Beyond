@@ -25,7 +25,9 @@ export default function ChainDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [answer, setAnswer] = useState("");
+  const [upload, setUpload] = useState(null); // File for file/image tasks
   const [submitting, setSubmitting] = useState(false);
+
   const [notice, setNotice] = useState("");
   const [sessions, setSessions] = useState([]);
   const [busyTask, setBusyTask] = useState(null);
@@ -80,16 +82,33 @@ export default function ChainDetail() {
     }
   }
 
+  // Map a task's expected output to the Submission field the value belongs in.
+  const FIELD_BY_TYPE = {
+    text: "text_content",
+    code: "code_content",
+    github_url: "github_url",
+    live_url: "live_url",
+    file: "file_upload",
+    image: "image_upload",
+  };
+
   async function handleSubmit(task) {
+    const type = task.expected_output_type || "text";
     setSubmitting(true);
     setNotice("");
     try {
-      await api.post("/submissions/", {
-        task_id: task.id,
-        submission_type: "text",
-        text_content: answer,
-      });
+      const fd = new FormData();
+      fd.append("task_id", task.id);
+      fd.append("submission_type", type);
+      const field = FIELD_BY_TYPE[type] || "text_content";
+      if (type === "file" || type === "image") {
+        fd.append(field, upload);
+      } else {
+        fd.append(field, answer);
+      }
+      await api.post("/submissions/", fd);
       setAnswer("");
+      setUpload(null);
       setNotice("Submitted! Your mentor will review it soon.");
       await load();
     } catch (err) {
@@ -98,6 +117,7 @@ export default function ChainDetail() {
       setSubmitting(false);
     }
   }
+
 
   if (loading) return <p className="max-w-4xl mx-auto px-6 py-12 text-ink-soft">Loading…</p>;
   if (error) return <p className="max-w-4xl mx-auto px-6 py-12 text-danger">{error}</p>;
@@ -179,7 +199,23 @@ export default function ChainDetail() {
               </div>
               <p className="mt-2 text-sm text-ink-soft">{task.description}</p>
 
+              {task.learning_topics?.length > 0 && !locked && (
+                <div className="mt-3">
+                  <p className="text-[11px] font-semibold text-ink-soft uppercase tracking-wide">
+                    Topics you must cover
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {task.learning_topics.map((t, i) => (
+                      <span key={i} className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {task.video_url && !locked && (
+
                 <div className="mt-3">
                   <p className="text-xs font-semibold text-primary mb-1">🎬 Watch your mentor's lesson</p>
                   <div className="aspect-video rounded-lg overflow-hidden border border-line">
@@ -205,23 +241,81 @@ export default function ChainDetail() {
                 </ul>
               )}
 
-              {isStudent && current && (
-                <div className="mt-4">
-                  <textarea
-                    className="field min-h-[120px] resize-y"
-                    placeholder="Write your answer / deliverable here…"
-                    value={answer}
-                    onChange={(e) => setAnswer(e.target.value)}
-                  />
-                  <button
-                    onClick={() => handleSubmit(task)}
-                    disabled={submitting || !answer.trim()}
-                    className="btn-primary mt-3"
-                  >
-                    {submitting ? "Submitting…" : "Submit for review"}
-                  </button>
-                </div>
-              )}
+              {isStudent && current && (() => {
+                const type = task.expected_output_type || "text";
+                const isUpload = type === "file" || type === "image";
+                const ready = isUpload ? !!upload : !!answer.trim();
+                return (
+                  <div className="mt-4">
+                    {type === "text" && (
+                      <textarea
+                        className="field min-h-[120px] resize-y"
+                        placeholder="Write your answer / deliverable here…"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                      />
+                    )}
+                    {type === "code" && (
+                      <textarea
+                        className="field min-h-[160px] resize-y font-mono text-sm"
+                        placeholder="Paste your code here…"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                      />
+                    )}
+                    {type === "github_url" && (
+                      <input
+                        className="field"
+                        type="url"
+                        placeholder="https://github.com/you/your-repo"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                      />
+                    )}
+                    {type === "live_url" && (
+                      <input
+                        className="field"
+                        type="url"
+                        placeholder="https://your-live-project.com"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                      />
+                    )}
+                    {type === "file" && (
+                      <input
+                        className="block w-full text-sm text-ink-soft file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-primary/10 file:text-primary file:font-semibold"
+                        type="file"
+                        onChange={(e) => setUpload(e.target.files[0] || null)}
+                      />
+                    )}
+                    {type === "image" && (
+                      <div>
+                        <input
+                          className="block w-full text-sm text-ink-soft file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-primary/10 file:text-primary file:font-semibold"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setUpload(e.target.files[0] || null)}
+                        />
+                        {upload && (
+                          <img
+                            src={URL.createObjectURL(upload)}
+                            alt="preview"
+                            className="mt-3 max-h-48 rounded-lg border border-line"
+                          />
+                        )}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => handleSubmit(task)}
+                      disabled={submitting || !ready}
+                      className="btn-primary mt-3"
+                    >
+                      {submitting ? "Submitting…" : "Submit for review"}
+                    </button>
+                  </div>
+                );
+              })()}
+
 
               {/* Per-task video review call */}
               {isStudent && !locked && (() => {

@@ -8,10 +8,12 @@ class Submission(models.Model):
     TYPE_CHOICES = [
         ("text", "Text"),
         ("file", "File"),
+        ("image", "Image / Photo"),
         ("github_url", "GitHub URL"),
         ("live_url", "Live URL"),
         ("code", "Code"),
     ]
+
     STATUS_CHOICES = [
         ("pending", "Pending"),
         ("approved", "Approved"),
@@ -27,7 +29,10 @@ class Submission(models.Model):
     submission_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="text")
     text_content = models.TextField(blank=True)
     file_url = models.URLField(blank=True)
+    file_upload = models.FileField(upload_to="submissions/files/", blank=True, null=True)
+    image_upload = models.ImageField(upload_to="submissions/images/", blank=True, null=True)
     github_url = models.URLField(blank=True)
+
     live_url = models.URLField(blank=True)
     code_content = models.TextField(blank=True)
     hints_used = models.PositiveSmallIntegerField(default=0)

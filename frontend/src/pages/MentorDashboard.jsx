@@ -100,10 +100,18 @@ export default function MentorDashboard() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12">
-      <h1 className="font-display text-3xl text-ink">Mentor Dashboard</h1>
-      <p className="mt-1 text-ink-soft">
-        Welcome, {user?.name}. Review student submissions below.
-      </p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-display text-3xl text-ink">Mentor Dashboard</h1>
+          <p className="mt-1 text-ink-soft">
+            Welcome, {user?.name}. Review student submissions below.
+          </p>
+        </div>
+        <a href="/chains/new" className="btn-primary">
+          🤖 Create Chain with AI
+        </a>
+      </div>
+
 
       {notice && (
         <div className="mt-4 bg-primary/5 text-primary text-sm rounded-md px-4 py-2">{notice}</div>
@@ -245,9 +253,26 @@ export default function MentorDashboard() {
               </span>
             </div>
 
-            <div className="mt-3 bg-surface-muted rounded-md p-4 text-sm text-ink whitespace-pre-wrap">
-              {sub.text_content || sub.github_url || sub.live_url || "(no text content)"}
+            <div className="mt-3 bg-surface-muted rounded-md p-4 text-sm text-ink">
+              {sub.image_upload ? (
+                <a href={sub.image_upload} target="_blank" rel="noreferrer">
+                  <img src={sub.image_upload} alt="submission" className="max-h-64 rounded-lg border border-line" />
+                </a>
+              ) : sub.file_upload ? (
+                <a href={sub.file_upload} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                  📎 Download submitted file
+                </a>
+              ) : sub.code_content ? (
+                <pre className="whitespace-pre-wrap font-mono text-xs overflow-x-auto">{sub.code_content}</pre>
+              ) : sub.github_url || sub.live_url ? (
+                <a href={sub.github_url || sub.live_url} target="_blank" rel="noreferrer" className="text-primary hover:underline break-all">
+                  {sub.github_url || sub.live_url}
+                </a>
+              ) : (
+                <span className="whitespace-pre-wrap">{sub.text_content || "(no content)"}</span>
+              )}
             </div>
+
 
             <textarea
               className="field mt-4 min-h-[80px] resize-y"

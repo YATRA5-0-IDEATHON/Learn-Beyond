@@ -9,8 +9,9 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             "id", "title", "description", "order_number", "difficulty",
-            "hints", "video_url", "expected_output_type", "status",
+            "hints", "learning_topics", "video_url", "expected_output_type", "status",
         ]
+
 
     def get_status(self, obj):
         current = self.context.get("current_task_order")

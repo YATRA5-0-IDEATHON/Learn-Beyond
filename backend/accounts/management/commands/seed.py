@@ -110,7 +110,16 @@ MENTORS = [
         "skills": ["finance", "business"], "levels": {"finance": ["beginner"]},
         "bio": "Investment analyst teaching financial modelling and market analysis.",
     },
+    {
+        "email": "rajan@learnbeyond.np", "name": "Rajan Maharjan",
+        "job_title": "Smart Contract Engineer", "employer": "Chainlabs",
+        "years": 7, "rate": 700, "rating": 4.9, "sessions": 52,
+        "skills": ["blockchain", "web_dev"],
+        "levels": {"blockchain": ["beginner", "intermediate"], "web_dev": ["beginner"]},
+        "bio": "Smart contract engineer shipping Solidity dApps on Ethereum. I mentor developers into Web3 with real, audited on-chain projects.",
+    },
 ]
+
 
 # ---------------------------------------------------------------------------
 # Task chains keyed by skill. Full-stack is the flagship demo chain.
@@ -178,15 +187,181 @@ CHAINS = {
     "finance": {
         "title": "Finance Analyst Path",
         "level": "beginner",
-        "description": "Financial modelling, analysis and investment fundamentals.",
+        "description": (
+            "Become a job-ready financial analyst. You'll analyze a real company's "
+            "financial statements, build a working financial model, run a full ratio "
+            "analysis, visualize your findings, and deliver a professional investment "
+            "recommendation — every stage reviewed by a Chartered Accountant."
+        ),
         "tasks": [
-            ("Read financial statements", "Analyze a company's balance sheet and P/L.", ["Watch the cash flow"], ""),
-            ("Build a financial model", "Create a 12-month revenue projection.", ["State assumptions"], ""),
-            ("Ratio analysis", "Compute and interpret 5 key financial ratios.", ["Compare to industry"], ""),
-            ("Investment memo", "Write a one-page investment recommendation.", ["Lead with the thesis"], ""),
+            {
+                "title": "Read & summarize the financial statements",
+                "description": (
+                    "Take a real company's annual report and summarize its income "
+                    "statement, balance sheet, and cash flow statement in plain "
+                    "language. Explain how the three statements connect and where the "
+                    "company earns and spends its money. Submit a written summary."
+                ),
+                "output": "text",
+                "topics": ["Income statement", "Balance sheet", "Cash flow statement", "How the statements link"],
+                "hints": ["Follow the cash, not just the profit", "Note any unusual one-off items"],
+                "video": "WEDIj9JBTC8",
+
+            },
+            {
+                "title": "Build a 12-month financial model",
+                "description": (
+                    "Construct a 12-month revenue and expense projection in a "
+                    "spreadsheet. Clearly state your assumptions for revenue growth, "
+                    "cost of goods sold, operating expenses, and seasonality. Output "
+                    "projected monthly net profit and a simple cash-flow forecast. "
+                    "Submit the spreadsheet file."
+                ),
+                "output": "file",
+                "topics": ["Financial modelling", "Assumptions & drivers", "Revenue projection", "Cash-flow forecast"],
+                "hints": ["Keep assumptions on their own tab", "Make growth rates easy to change"],
+                "video": "Sdc6dbrCFXQ",
+
+            },
+            {
+                "title": "Run a ratio & trend analysis",
+                "description": (
+                    "Compute and interpret at least five key financial ratios: current "
+                    "ratio, gross margin, net profit margin, return on equity, and "
+                    "debt-to-equity. Compare each against industry benchmarks and "
+                    "explain what the trend says about the company's health."
+                ),
+                "output": "text",
+                "topics": ["Liquidity ratios", "Profitability ratios", "Leverage ratios", "Benchmarking"],
+                "hints": ["Always compare to the industry", "One ratio alone tells you little — look for the story"],
+                "video": "cB9nAX3J6-c",
+
+            },
+            {
+                "title": "Visualize the data",
+                "description": (
+                    "Create clear charts that communicate your findings: a bar chart "
+                    "comparing expense categories and a line chart showing the revenue "
+                    "trend and projection. Submit an image of your most important chart "
+                    "with a short caption explaining the key insight."
+                ),
+                "output": "image",
+                "topics": ["Data visualization", "Choosing the right chart", "Communicating insight"],
+                "hints": ["One chart = one message", "Label axes and add a clear title"],
+                "video": "Vl0H-qTclOg",
+
+            },
+            {
+                "title": "Write an investment recommendation memo",
+                "description": (
+                    "Write a concise one-page investment memo. Lead with your "
+                    "recommendation (buy, hold, or sell), support it with evidence from "
+                    "your model and ratio analysis, state the key risks, and give a "
+                    "target valuation range. Use correct financial terminology."
+                ),
+                "output": "text",
+                "topics": ["Investment thesis", "Valuation", "Risk assessment", "Executive summary writing"],
+                "hints": ["Lead with the recommendation", "Quantify the upside and the risk"],
+                "video": "n1SATkPFCzY",
+
+            },
+        ],
+    },
+
+    # Flagship rich chain: full descriptions, per-stage videos, learning topics
+    # and varied expected output types (text/code/github_url/live_url/image).
+    "blockchain": {
+        "title": "Blockchain Developer Path",
+        "level": "intermediate",
+        "description": (
+            "Become a job-ready smart contract developer. You'll go from Solidity "
+            "fundamentals to building, testing, deploying and auditing a complete "
+            "decentralized application (dApp) on Ethereum — every stage reviewed by "
+            "a working smart contract engineer."
+        ),
+        "tasks": [
+            {
+                "title": "Understand blockchain & Ethereum fundamentals",
+                "description": (
+                    "Write a clear explainer (in your own words) covering how a "
+                    "blockchain works: blocks, hashing, consensus (Proof of Stake), "
+                    "gas, accounts (EOA vs contract), and what the Ethereum Virtual "
+                    "Machine (EVM) does. Explain why smart contracts are immutable and "
+                    "why that matters for security."
+                ),
+                "output": "text",
+                "topics": ["Blockchain basics", "Ethereum & EVM", "Gas & transactions", "Consensus (PoS)"],
+                "hints": ["Use a concrete transaction as an example", "Explain gas like a fee for computation"],
+                "video": "gyMwXuJrbJQ",
+            },
+            {
+                "title": "Write your first Solidity smart contract",
+                "description": (
+                    "Create an ERC-20-style token contract in Solidity. It should "
+                    "have a name, symbol, total supply, balances mapping, and a "
+                    "working transfer() function with proper require() checks. Submit "
+                    "your .sol code."
+                ),
+                "output": "code",
+                "topics": ["Solidity syntax", "State variables & mappings", "Functions & modifiers", "require() checks"],
+                "hints": ["Use SPDX license & pragma", "Guard transfers with balance checks", "Emit a Transfer event"],
+                "video": "M576WGiDBdQ",
+            },
+            {
+                "title": "Test your contract with Hardhat",
+                "description": (
+                    "Set up a Hardhat project and write unit tests for your token "
+                    "using ethers.js. Cover the happy path (successful transfer) and "
+                    "failure cases (insufficient balance). Push the project to GitHub "
+                    "and submit the repository URL."
+                ),
+                "output": "github_url",
+                "topics": ["Hardhat", "ethers.js", "Unit testing", "Test coverage"],
+                "hints": ["Test both success and revert cases", "Use expect(...).to.be.revertedWith(...)"],
+                "video": "9Qpi80dQsGU",
+            },
+            {
+                "title": "Deploy to a public testnet",
+                "description": (
+                    "Deploy your token contract to the Sepolia testnet using Hardhat "
+                    "and an Alchemy/Infura RPC. Verify the contract on Etherscan and "
+                    "submit the live Etherscan contract URL so anyone can inspect it."
+                ),
+                "output": "live_url",
+                "topics": ["Testnets (Sepolia)", "RPC providers", "Private key safety", "Etherscan verification"],
+                "hints": ["Never commit your private key — use .env", "Get test ETH from a faucet first"],
+                "video": "Sml7Nrgi1B4",
+            },
+            {
+                "title": "Build a dApp frontend to interact with your contract",
+                "description": (
+                    "Build a small React frontend that connects to MetaMask, reads a "
+                    "user's token balance, and lets them transfer tokens through your "
+                    "deployed contract. Submit a screenshot of the working dApp with a "
+                    "wallet connected."
+                ),
+                "output": "image",
+                "topics": ["ethers.js in React", "MetaMask & wallet connect", "Reading/writing contract state"],
+                "hints": ["Handle the 'no wallet' case", "Show a loading state while the tx confirms"],
+                "video": "a0osIaAOFSE",
+            },
+            {
+                "title": "Audit & secure your smart contract",
+                "description": (
+                    "Review your contract for common vulnerabilities (reentrancy, "
+                    "integer overflow, missing access control). Write a short security "
+                    "report listing each risk you checked, whether your contract is "
+                    "affected, and the fix or reason it's safe."
+                ),
+                "output": "text",
+                "topics": ["Reentrancy", "Access control", "Overflow/underflow", "Checks-Effects-Interactions"],
+                "hints": ["Reference the SWC registry", "Explain why Solidity 0.8+ prevents overflow"],
+                "video": "ROZK9orl_LU",
+            },
         ],
     },
 }
+
 
 
 class Command(BaseCommand):
@@ -233,14 +408,28 @@ class Command(BaseCommand):
                 defaults={"title": data["title"], "description": data["description"]},
             )
             if made:
-                for i, (title, desc, hints, vid) in enumerate(data["tasks"], start=1):
+                for i, t in enumerate(data["tasks"], start=1):
+                    # Tasks may be a simple tuple (title, desc, hints, video_id) or
+                    # a rich dict with output type + learning topics.
+                    if isinstance(t, dict):
+                        title = t["title"]
+                        desc = t["description"]
+                        hints = t.get("hints", [])
+                        vid = t.get("video", "")
+                        out_type = t.get("output", "text")
+                        topics = t.get("topics", [])
+                    else:
+                        title, desc, hints, vid = t
+                        out_type = "text"
+                        topics = []
                     Task.objects.create(
                         chain=chain, title=title, description=desc,
-                        order_number=i, hints=hints,
+                        order_number=i, hints=hints, learning_topics=topics,
                         video_url=(YT + vid) if vid else "",
-                        expected_output_type="text",
+                        expected_output_type=out_type,
                     )
             chain_objs[skill] = chain
+
 
         # ------- Demo student 1: brand-new (for live walkthrough) -------
         sita, created = User.objects.get_or_create(
